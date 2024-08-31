@@ -1,3 +1,4 @@
+using ScriptableObjects;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -88,8 +89,8 @@ public class PlayerController : MonoBehaviour
     private bool _bullet1ToConsume;
     private bool _bullet2ToConsume;
 
-    private bool CanFireBullet1 => _currentWeapon == 1 && _time > _timeBullet1WasFired + weaponStats1.timeBetweenShots;
-    private bool CanFireBullet2 => _currentWeapon == 2 && _time > _timeBullet2WasFired + weaponStats2.timeBetweenShots;
+    private bool CanFireBullet1 => _currentWeapon == 1 && _time > _timeBullet1WasFired + weaponStats1.baseTimeBetweenShots;
+    private bool CanFireBullet2 => _currentWeapon == 2 && _time > _timeBullet2WasFired + weaponStats2.baseTimeBetweenShots;
     
     private void HandleBullets()
     {
@@ -126,16 +127,18 @@ public class PlayerController : MonoBehaviour
     {
         _timeBullet1WasFired = _time;
 
-        _shrinkage = weaponStats1.playerShrinkage;
-        _velocity += GetDirectionOfPlayer(0f) * weaponStats1.recoilForce;
+        Instantiate(bullet1, transform.position, transform.localRotation);
+        
+        // _shrinkage = weaponStats1.playerShrinkage;
+        _velocity += -GetDirectionOfPlayer(0f) * weaponStats1.recoilForce;
     }
     
     private void FireBullet2() 
     {
         _timeBullet2WasFired = _time;
 
-        _shrinkage = weaponStats2.playerShrinkage;
-        _velocity += GetDirectionOfPlayer(0f) * weaponStats2.recoilForce;
+        // _shrinkage = weaponStats2.playerShrinkage;
+        _velocity += -GetDirectionOfPlayer(0f) * weaponStats2.recoilForce;
     }
 
     #endregion
@@ -144,34 +147,34 @@ public class PlayerController : MonoBehaviour
     {
         HandleRotation();
         HandleMovement();
-        HandleShrinkage();
+        // HandleShrinkage();
         
         ApplyMovement();
     }
 
     #region Shrinkage
-
-    [Header("Shrinkage")]
-    [Range(0.4f, 0.9f)] [SerializeField] private float softness;
-    private float _shrinkage;
-
-    private float _shrinkageAdjustment;
-    
-    private void HandleShrinkage()
-    {
-        _shrinkageAdjustment = (0 - _shrinkage) * softness + _shrinkageAdjustment * softness;
-        _shrinkage += _shrinkageAdjustment;
-
-        float xOffset = Mathf.Clamp(_shrinkage, -1, 0);
-        float yOffset = -Mathf.Clamp(_shrinkage, 0, 1);
-
-        Vector3 scale = new Vector3(1, 1, 1);
-        scale.x += xOffset;
-        scale.y += yOffset;
-
-        // transform.localScale = scale;
-        transform.localScale = new Vector3(1, 1 - (_velocity.x * _velocity.x + _velocity.y * _velocity.y)/2000, 1);
-    }
+    //
+    // [Header("Shrinkage")]
+    // [Range(0.4f, 0.9f)] [SerializeField] private float softness;
+    // private float _shrinkage;
+    //
+    // private float _shrinkageAdjustment;
+    //
+    // private void HandleShrinkage()
+    // {
+    //     _shrinkageAdjustment = (0 - _shrinkage) * softness + _shrinkageAdjustment * softness;
+    //     _shrinkage += _shrinkageAdjustment;
+    //
+    //     float xOffset = Mathf.Clamp(_shrinkage, -1, 0);
+    //     float yOffset = -Mathf.Clamp(_shrinkage, 0, 1);
+    //
+    //     Vector3 scale = new Vector3(1, 1, 1);
+    //     scale.x += xOffset;
+    //     scale.y += yOffset;
+    //
+    //     // transform.localScale = scale;
+    //     transform.localScale = new Vector3(1, 1 - (_velocity.x * _velocity.x + _velocity.y * _velocity.y)/2000, 1);
+    // }
 
     #endregion
 
