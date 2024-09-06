@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9620f82289f0fc64e93e485bd2f1b933, type: 3}
   m_Name: Weapon1
   m_EditorClassIdentifier: 
-  baseTimeBetweenShots: 0
+  baseTimeBetweenShots: 0.2
   recoilForce: 1

@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e63af0d70dd54141a1f2ed3404fef44, type: 3}
   m_Name: King
   m_EditorClassIdentifier: 
-  speedFactor: 6
+  speedFactor: 8
   maxYOffset: 0.5

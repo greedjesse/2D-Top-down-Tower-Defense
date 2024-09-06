@@ -8,21 +8,21 @@ public class PieceController : MonoBehaviour
 {
     [SerializeField] private PieceStats stats;
     
-    #region Movement
-    private Vector2 _source;
-    [SerializeField] private Vector2 _destination;
-    [SerializeField] private Vector2 _currentPos;
-    [SerializeField] private Vector2 _shadowPos;
-
-    private float _distanceSD;  // TODO -> Remember to change this after determined the new source.
-
-    private float _speed;
-    private Vector2 _velocity;
-    
     void FixedUpdate()
     {
         HandleMovement();
     }
+    
+    #region Movement
+    [SerializeField] private Vector2 _source;
+    [SerializeField] private Vector2 _destination;
+    [SerializeField] private Vector2 _currentPos;
+    [SerializeField] private Vector2 _shadowPos;
+
+    [SerializeField] private float _distanceSD;  // TODO -> Remember to change this after determined the new source.
+
+    private float _speed;
+    private Vector2 _velocity;
     
     private void HandleMovement()
     {
@@ -33,17 +33,21 @@ public class PieceController : MonoBehaviour
         _velocity = (_destination - _source).normalized * _speed;
 
         _shadowPos += _velocity;
-        _currentPos = _shadowPos + new Vector2(0f, Offset(SquaredDist(_source, _shadowPos), stats.maxYOffset, Mathf.Pow(_distanceSD, 2)));
+        _currentPos = _shadowPos + new Vector2(0f,
+            Offset(Vector2.Distance(_source, _shadowPos), stats.maxYOffset, _distanceSD));
 
-        transform.position = _shadowPos;  // TODO -> Change.
+        transform.position = _currentPos;
     }
 
     private float Offset(float x, float max, float end)
     {
+        if (_distanceSD == 0) return 0;
+        
+        // TODO -> Can be optimized.
         float h = end / 2;
         float k = max;
         float a = - k / Mathf.Pow(h, 2);
-
+        
         return a * Mathf.Pow(x - h, 2) + k;
     }
 
@@ -51,6 +55,6 @@ public class PieceController : MonoBehaviour
 
     private float SquaredDist(Vector2 a, Vector2 b)
     {
-        return a.x * b.x + a.y * b.y;        
+        return Mathf.Pow(a.x - b.x, 2) + Mathf.Pow(a.y * b.y, 2);        
     }
 }
