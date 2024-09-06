@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a648db918eb30747a57c475be66ad63, type: 3}
   m_Name: ShadowStats
   m_EditorClassIdentifier: 
-  color: {r: 0.6392157, g: 0.6392157, b: 0.6392157, a: 1}
+  color: {r: 0.6392157, g: 0.6392157, b: 0.6392157, a: 0.6392157}
   xOffset: 0.05
   yOffset: -0.05
