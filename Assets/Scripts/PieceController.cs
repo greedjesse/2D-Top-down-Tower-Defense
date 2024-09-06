@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 
 public class PieceController : MonoBehaviour
 {
@@ -17,7 +13,7 @@ public class PieceController : MonoBehaviour
     [SerializeField] private Vector2 _source;
     [SerializeField] private Vector2 _destination;
     [SerializeField] private Vector2 _currentPos;
-    [SerializeField] private Vector2 _shadowPos;
+    public Vector2 shadowPos;
 
     [SerializeField] private float _distanceSD;  // TODO -> Remember to change this after determined the new source.
 
@@ -29,12 +25,12 @@ public class PieceController : MonoBehaviour
         // TODO -> Remove.
         _distanceSD = Vector2.Distance(_source, _destination);
         
-        _speed = Vector2.Distance(_shadowPos, _destination) / stats.speedFactor;
+        _speed = Vector2.Distance(shadowPos, _destination) / stats.speedFactor;
         _velocity = (_destination - _source).normalized * _speed;
 
-        _shadowPos += _velocity;
-        _currentPos = _shadowPos + new Vector2(0f,
-            Offset(Vector2.Distance(_source, _shadowPos), stats.maxYOffset, _distanceSD));
+        shadowPos += _velocity;
+        _currentPos = shadowPos + new Vector2(0f,
+            Offset(Vector2.Distance(_source, shadowPos), stats.maxYOffset, _distanceSD));
 
         transform.position = _currentPos;
     }

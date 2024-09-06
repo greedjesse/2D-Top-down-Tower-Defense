@@ -7,11 +7,13 @@ public class Shadow : MonoBehaviour
 
     private SpriteRenderer _spriteRenderer;
     private GameObject _parent;
+    private PieceController _parentController;
     
     void Awake()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _parent = transform.parent.gameObject;
+        _parentController = _parent.GetComponent<PieceController>();
     }
 
     void Start()
@@ -30,7 +32,7 @@ public class Shadow : MonoBehaviour
     private void HandleShadow()
     {
         transform.localRotation = _parent.transform.localRotation;
-        transform.position = _parent.transform.position + new Vector3(stats.xOffset, stats.yOffset, 0);
+        transform.position = _parentController.shadowPos + new Vector2(stats.xOffset, stats.yOffset);
     }
 
     #endregion
