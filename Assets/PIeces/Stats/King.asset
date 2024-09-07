@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedFactor: 8
   maxYOffset: 0.5
+  groundingThreshold: 0.001

@@ -1,4 +1,6 @@
+using System.Collections;
 using TMPro.EditorUtilities;
+using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
 
 public class PieceController : MonoBehaviour
@@ -9,14 +11,19 @@ public class PieceController : MonoBehaviour
     private Camera _camera;
 
     #endregion
+
+    private float _time;
     
     void Start()
     {
+        _time = 0;
         _camera = Camera.main;
     }
     
-    void Update() 
+    void Update()
     {
+        _time += Time.deltaTime;
+        
         GatherInputs();
     }
 
@@ -53,52 +60,62 @@ public class PieceController : MonoBehaviour
     
     private void HandleGroundCheck()
     {
-        _grounded = false;
-        Debug.Log(SquaredDist(shadowPos, _destination));
-        if (SquaredDist(shadowPos, _destination) < stats.groundingThreshold)
+        
+    }
+    #endregion
+    
+    #region Movement
+    private float _speed;
+    private Vector2 _velocity;
+    
+    private Vector2 _source;
+    private Vector2 _destination;
+    private Vector2 _currentPos;
+    private float _distanceToSource;
+    public Vector2 shadowPos;
+
+    private bool _moveToConsume;
+
+    private Vector2 _possibleDestination;
+    private float _distanceSD;
+    private float _timeLastMoveExecuted;
+
+    private bool Moving => _time < _timeLastMoveExecuted + stats.moveTime; 
+    
+    private void HandleMovement()
+    {
+        if (!Moving)
         {
             _grounded = true;
             _source = _destination;
             shadowPos = _destination;
             _currentPos = _destination;
         }
-    }
-    #endregion
-    
-    #region Movement
-    [SerializeField] private Vector2 _source;
-    [SerializeField] private Vector2 _destination;
-    [SerializeField] private Vector2 _currentPos;
-    public Vector2 shadowPos;
-
-    private bool _moveToConsume;
-    private Vector2 _possibleDestination;
-    
-    [SerializeField] private float _distanceSD;  // TODO -> Remember to change this after determined the new source.
-
-    private float _speed;
-    private Vector2 _velocity;
-    
-    private void HandleMovement()
-    {
-        if (_grounded && _moveToConsume)
-        {
-            _destination = _possibleDestination;
-            _distanceSD = Vector2.Distance(_source, _destination);
-            _grounded = false;
-        }
+        
+        if (_grounded && _moveToConsume) ExecuteMove();
         _moveToConsume = false;
         
-        _speed = Vector2.Distance(shadowPos, _destination) / stats.speedFactor;
-        _velocity = (_destination - _source).normalized * _speed;
+        if (Moving)
+        {
+            _speed = Vector2.Distance(shadowPos, _destination) / stats.speedFactor;
+            _velocity = (_destination - _source).normalized * _speed;
 
-        shadowPos += _velocity;
-        _currentPos = shadowPos + new Vector2(0f,
-            Offset(Vector2.Distance(_source, shadowPos), stats.maxYOffset, _distanceSD));
+            shadowPos += _velocity;
+            _distanceToSource = Vector2.Distance(_source, shadowPos);
+            _currentPos = shadowPos + new Vector2(0f, Offset(_distanceToSource, stats.maxYOffset, _distanceSD));
 
-        transform.position = _currentPos;
+            transform.position = _currentPos;
+        }
     }
 
+    private void ExecuteMove()
+    {
+        _timeLastMoveExecuted = _time;
+        _destination = _possibleDestination;
+        _distanceSD = Vector2.Distance(_source, _destination);
+        _grounded = false;
+    }
+    
     private float Offset(float x, float max, float end)
     {
         if (_distanceSD == 0) return 0;
