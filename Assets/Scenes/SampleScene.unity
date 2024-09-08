@@ -479,7 +479,7 @@ GameObject:
   - component: {fileID: 1359302242}
   - component: {fileID: 1359302241}
   m_Layer: 0
-  m_Name: Circle
+  m_Name: King
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -498,12 +498,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stats: {fileID: 11400000, guid: 7848a283bfb0d3044996f2b8466e2f74, type: 2}
-  _grounded: 0
   _source: {x: 0, y: 0}
   _destination: {x: 0, y: 0}
-  _currentPos: {x: 0, y: 0}
   shadowPos: {x: 0, y: 0}
-  _distanceSD: 0
 --- !u!212 &1359302242
 SpriteRenderer:
   m_ObjectHideFlags: 0
