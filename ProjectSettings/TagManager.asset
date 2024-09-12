@@ -38,6 +38,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Tile
+    uniqueID: 3825199661
+    locked: 0
   - name: Shadow
     uniqueID: 1577614479
     locked: 0
