@@ -19,4 +19,13 @@ MonoBehaviour:
   minYOffset: 0.3
   dMaxYOffset: 10
   dMinYOffset: 1
+  patterns:
+  - {x: -1, y: -1}
+  - {x: -1, y: 0}
+  - {x: -1, y: 1}
+  - {x: 0, y: 1}
+  - {x: 0, y: -1}
+  - {x: 1, y: -1}
+  - {x: 1, y: 0}
+  - {x: 1, y: 1}
   earlyGroundingTimeOffset: 0.3

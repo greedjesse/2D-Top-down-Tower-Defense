@@ -1,13 +1,13 @@
-using System.Collections;
-using TMPro.EditorUtilities;
-using Unity.VisualScripting.ReorderableList;
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PieceController : MonoBehaviour
 {
     #region Components
 
     [SerializeField] private PieceStats stats;
+    [FormerlySerializedAs("_sh")] [SerializeField] private StatsHolder sh;
     private Camera _camera;
 
     #endregion
@@ -25,6 +25,7 @@ public class PieceController : MonoBehaviour
         _time += Time.deltaTime;
         
         GatherInputs();
+        HandleSelection();
     }
 
     #region Inputs
@@ -67,8 +68,8 @@ public class PieceController : MonoBehaviour
     private float _speed;
     private Vector2 _velocity;
     
-    [SerializeField] private Vector2 _source;
-    [SerializeField] private Vector2 _destination;
+    private Vector2 _source;
+    private Vector2 _destination;
     private Vector2 _currentPos;
     private float _distanceToSource;
     public Vector2 shadowPos;
@@ -134,6 +135,43 @@ public class PieceController : MonoBehaviour
         float a = - k / Mathf.Pow(h, 2);
         
         return a * Mathf.Pow(x - h, 2) + k;
+    }
+
+    #endregion
+    
+    #region Selection
+
+    private bool _mouseOver;
+
+    private void HandleSelection()
+    {
+        if (_mouseOver) return;
+        
+        if (_inputs.LeftMouseDown)
+        {
+            if (sh.selectedPiece == gameObject)
+            {
+                sh.selectedPieceQueue.Remove(gameObject);
+            }
+        }    
+    }
+    
+    // Collider needed.
+    void OnMouseOver()
+    {
+        _mouseOver = true;
+        if (_inputs.LeftMouseDown)
+        {
+            if (!sh.selectedPieceQueue.Contains(gameObject))
+            {
+                sh.selectedPieceQueue.Add(gameObject);
+            }
+        }
+    }
+
+    void OnMouseExit()
+    {
+        _mouseOver = false;
     }
 
     #endregion
