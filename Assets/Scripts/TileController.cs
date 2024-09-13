@@ -7,9 +7,10 @@ public class TileController : MonoBehaviour
     [SerializeField] private GameObject tilePrefab;
 
     [Header("Instantiate")]
+    public Vector2 centerPos;
     [SerializeField] private Vector2 startPos;
-    [SerializeField] private Vector2 tileCount;
-    [SerializeField] private Vector2 tileSize;
+    [Tooltip("Even values only.")] [SerializeField] private Vector2 tileCount;
+    public Vector2 tileSize;
 
     [Header("Colors")] 
     [SerializeField] private Color normalColor;
@@ -26,7 +27,7 @@ public class TileController : MonoBehaviour
     [SerializeField] private float cursorHighlightRange;
     
     private Camera _camera;
-    public List<Vector3> highlightPosAndRange;
+    [HideInInspector] public List<Vector3> highlightPosAndRange;
 
     void Awake()
     {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
@@ -6,8 +7,10 @@ public class Tile : MonoBehaviour
     private Camera _camera;
     private SpriteRenderer _sr;
     private TileController _tc;
-
+    
     private Vector2 _girdSize;
+
+    public Vector2 coordinate;
 
     void Awake()
     {
@@ -33,6 +36,8 @@ public class Tile : MonoBehaviour
     {
         HandleMovement();
         HandleOpacity();
+        
+        GetCoordinate();
     }
 
     #region Movement
@@ -56,8 +61,6 @@ public class Tile : MonoBehaviour
     private float _opacityOffsetRange; 
     private float _opacitySpeedFactor;
 
-    public float test;
-
     private void HandleOpacity()
     {
         // Dynamic opacity.
@@ -69,13 +72,22 @@ public class Tile : MonoBehaviour
         }
         
         _opacity += (opacity - _opacity) / _opacitySpeedFactor;
-        test = _opacity;
         
         Color color = _sr.color;
         color.a = _opacity;
         _sr.color = color;
     }
 
+    #endregion
+    
+    #region Coordinate
+
+    private void GetCoordinate()
+    {
+        Vector2 relativePos = (Vector2) transform.position - _tc.centerPos;
+        coordinate = new Vector2(Mathf.Round(relativePos.x / _tc.tileSize.x), Mathf.Round(relativePos.y / _tc.tileSize.y));
+    }
+    
     #endregion
     
     #region Tools

@@ -15,5 +15,8 @@ MonoBehaviour:
   speedFactor: 6
   moveTime: 0.6
   moveBuffer: 0.2
-  maxYOffset: 0.5
+  maxYOffset: 0.7
+  minYOffset: 0.3
+  dMaxYOffset: 10
+  dMinYOffset: 1
   earlyGroundingTimeOffset: 0.3

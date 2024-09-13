@@ -7,7 +7,10 @@ public class PieceStats : ScriptableObject
     public float speedFactor = 8f;
     public float moveTime = 0.8f;
     public float moveBuffer = 0.1f;
-    public float maxYOffset = 0.5f;
+    public float maxYOffset = 1f;
+    public float minYOffset = 0.4f;
+    public float dMaxYOffset = 10f;
+    public float dMinYOffset = 0f;
 
     [Header("Grounding")] 
     public float earlyGroundingTimeOffset = 0.05f;

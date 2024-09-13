@@ -108,7 +108,8 @@ public class PieceController : MonoBehaviour
 
             shadowPos += _velocity;
             _distanceToSource = Vector2.Distance(_source, shadowPos);
-            _currentPos = shadowPos + new Vector2(0f, Offset(_distanceToSource, stats.maxYOffset, _distanceSD));
+            _currentPos = shadowPos + new Vector2(0f, Offset(_distanceToSource, Sigmoid(_distanceSD, 
+                new Vector2(stats.minYOffset, stats.maxYOffset), new Vector2(stats.dMinYOffset, stats.dMaxYOffset)), _distanceSD));
 
             transform.position = _currentPos;
         }
@@ -137,10 +138,21 @@ public class PieceController : MonoBehaviour
 
     #endregion
 
+    #region Tools
+    
     private float SquaredDist(Vector2 a, Vector2 b)
     {
         return Mathf.Pow(a.x - b.x, 2) + Mathf.Pow(a.y - b.y, 2);        
     }
+
+    private float Sigmoid(float x, Vector2 yRange, Vector2 xRange)
+    {
+        float xDist = xRange.y - xRange.x;
+        float yDist = yRange.y - yRange.x;
+        return yRange.x + (yDist / (1 + Mathf.Exp(-5f / xDist * (x - xDist / 2))));
+    }
+    
+    #endregion
 
     // Holds the inputs.
     struct Inputs
