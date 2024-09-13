@@ -1,12 +1,17 @@
 using System.Collections.Generic;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
+    #region Components
+    
     private Camera _camera;
     private SpriteRenderer _sr;
     private TileController _tc;
+    private StatsHolder _sh;
+    private Collider2D _col;
+    
+    #endregion
     
     private Vector2 _girdSize;
 
@@ -16,10 +21,12 @@ public class Tile : MonoBehaviour
     {
         _camera = Camera.main;
         _sr = GetComponent<SpriteRenderer>();
+        _col = GetComponent<Collider2D>();
     }
 
-    public void Init(TileController tc, Vector2 count, Vector2 size, float opacityOffsetRange, float opacitySpeedFactor, float opacity, Color color)
+    public void Init(StatsHolder sh, TileController tc, Vector2 count, Vector2 size, float opacityOffsetRange, float opacitySpeedFactor, float opacity, Color color)
     {
+        _sh = sh;
         _tc = tc;
         
         color.a = opacity;
@@ -38,6 +45,7 @@ public class Tile : MonoBehaviour
         HandleOpacity();
         
         GetCoordinate();
+        HandleSelection();
     }
 
     #region Movement
@@ -88,6 +96,23 @@ public class Tile : MonoBehaviour
         coordinate = new Vector2(Mathf.Round(relativePos.x / _tc.tileSize.x), Mathf.Round(relativePos.y / _tc.tileSize.y));
     }
     
+    #endregion
+    
+    #region Selection
+
+    private void HandleSelection()
+    {
+        Vector2 mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
+        if (_col.OverlapPoint(mousePos))
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                _sh.lastClickedTileCoord = coordinate;
+                _sh.lastClickedTilePos = transform.position;
+            }            
+        }
+    }
+
     #endregion
     
     #region Tools

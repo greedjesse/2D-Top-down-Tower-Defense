@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: ShadowStats
   m_EditorClassIdentifier: 
   color: {r: 0, g: 0, b: 0, a: 0.39215687}
-  xOffset: 0.05
-  yOffset: -0.05
+  xOffset: 0
+  yOffset: 0

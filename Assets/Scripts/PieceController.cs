@@ -1,13 +1,12 @@
-using System;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PieceController : MonoBehaviour
 {
     #region Components
 
     [SerializeField] private PieceStats stats;
-    [FormerlySerializedAs("_sh")] [SerializeField] private StatsHolder sh;
+    [SerializeField] private StatsHolder stateHolder;
+    private Collider2D _col;
     private Camera _camera;
 
     #endregion
@@ -17,6 +16,7 @@ public class PieceController : MonoBehaviour
     void Start()
     {
         _time = 0;
+        _col = GetComponent<Collider2D>();
         _camera = Camera.main;
     }
     
@@ -46,7 +46,7 @@ public class PieceController : MonoBehaviour
         if (_inputs.LeftMouseDown)
         {
             _timeLeftMouseWasPressed = _time;
-            _possibleDestination = _camera.ScreenToWorldPoint(Input.mousePosition);
+            _possibleDestination = stateHolder.GetTilePos(_camera.ScreenToWorldPoint(Input.mousePosition));
             _moveToConsume = true;
         }
     }
@@ -60,7 +60,8 @@ public class PieceController : MonoBehaviour
     
     #region Ground Check
 
-    private bool Grounded => !Moving || _time > _timeLastMoveExecuted + stats.moveTime - stats.earlyGroundingTimeOffset;
+    private float MoveTime => Sigmoid(_distanceSD, new Vector2(stats.dMinMoveTime, stats.dMaxMoveTime), new Vector2(stats.minMoveTime, stats.maxMoveTime));
+    private bool Grounded => !Moving || _time > _timeLastMoveExecuted + MoveTime - stats.earlyGroundingTimeOffset;
     
     #endregion
     
@@ -81,7 +82,7 @@ public class PieceController : MonoBehaviour
     private float _distanceSD;
     private float _timeLastMoveExecuted;
 
-    private bool Moving => _time < _timeLastMoveExecuted + stats.moveTime;
+    private bool Moving => _time < _timeLastMoveExecuted + MoveTime;
     private bool HaveBufferedMove => _moveBufferUsable && _time < _timeLeftMouseWasPressed + stats.moveBuffer;
     
     
@@ -109,8 +110,10 @@ public class PieceController : MonoBehaviour
 
             shadowPos += _velocity;
             _distanceToSource = Vector2.Distance(_source, shadowPos);
-            _currentPos = shadowPos + new Vector2(0f, Offset(_distanceToSource, Sigmoid(_distanceSD, 
-                new Vector2(stats.minYOffset, stats.maxYOffset), new Vector2(stats.dMinYOffset, stats.dMaxYOffset)), _distanceSD));
+            _currentPos = shadowPos + new Vector2(0f,
+                Offset(_distanceToSource,
+                    Sigmoid(_distanceSD, new Vector2(stats.dMinYOffset, stats.dMaxYOffset),
+                        new Vector2(stats.minYOffset, stats.maxYOffset)), _distanceSD));
 
             transform.position = _currentPos;
         }
@@ -141,39 +144,40 @@ public class PieceController : MonoBehaviour
     
     #region Selection
 
-    private bool _mouseOver;
+    private bool _selected;
 
     private void HandleSelection()
     {
-        if (_mouseOver) return;
+        _selected = false;
+        if (stateHolder.selectedPiece == gameObject)
+        {
+            _selected = true;
+        }
+
         
-        if (_inputs.LeftMouseDown)
+        Vector2 mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
+        if (_col.OverlapPoint(mousePos))
         {
-            if (sh.selectedPiece == gameObject)
+            if (_inputs.LeftMouseDown)
             {
-                sh.selectedPieceQueue.Remove(gameObject);
-            }
-        }    
-    }
-    
-    // Collider needed.
-    void OnMouseOver()
-    {
-        _mouseOver = true;
-        if (_inputs.LeftMouseDown)
-        {
-            if (!sh.selectedPieceQueue.Contains(gameObject))
-            {
-                sh.selectedPieceQueue.Add(gameObject);
+                if (!stateHolder.selectedPieceQueue.Contains(gameObject))
+                {
+                    stateHolder.selectedPieceQueue.Add(gameObject);
+                }
             }
         }
+        else
+        {
+            if (_inputs.LeftMouseDown)
+            {
+                if (stateHolder.selectedPiece == gameObject)
+                {
+                    stateHolder.selectedPieceQueue.Remove(gameObject);
+                }
+            }                
+        }
     }
-
-    void OnMouseExit()
-    {
-        _mouseOver = false;
-    }
-
+    
     #endregion
 
     #region Tools
@@ -183,7 +187,7 @@ public class PieceController : MonoBehaviour
         return Mathf.Pow(a.x - b.x, 2) + Mathf.Pow(a.y - b.y, 2);        
     }
 
-    private float Sigmoid(float x, Vector2 yRange, Vector2 xRange)
+    private float Sigmoid(float x, Vector2 xRange, Vector2 yRange)
     {
         float xDist = xRange.y - xRange.x;
         float yDist = yRange.y - yRange.x;

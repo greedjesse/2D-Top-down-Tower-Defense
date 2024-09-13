@@ -3,13 +3,15 @@ using UnityEngine;
 
 public class TileController : MonoBehaviour
 {
+    [SerializeField] private StatsHolder stateHolder;
+    
     [Header("Prefab")]
     [SerializeField] private GameObject tilePrefab;
 
     [Header("Instantiate")]
     public Vector2 centerPos;
-    [SerializeField] private Vector2 startPos;
-    [Tooltip("Even values only.")] [SerializeField] private Vector2 tileCount;
+    public Vector2 startPos;
+    [Tooltip("Even values only.")] public Vector2 tileCount;
     public Vector2 tileSize;
 
     [Header("Colors")] 
@@ -51,8 +53,10 @@ public class TileController : MonoBehaviour
                 GameObject instance = Instantiate(tilePrefab, new Vector3(startPos.x + c * tileSize.x - tileSize.x / 2, startPos.y + r * tileSize.y - tileSize.y / 2, 0), Quaternion.identity);
                 
                 bool offset = (c % 2 == 0 && r % 2 == 1) || (c % 2 == 1 && r % 2 == 0);
-                instance.GetComponent<Tile>().Init(this, tileCount, tileSize, opacityOffsetRange, opacitySpeedFactor,
+                instance.GetComponent<Tile>().Init(stateHolder, this, tileCount, tileSize, opacityOffsetRange, opacitySpeedFactor,
                     offset ? offsetOpacity : normalOpacity, offset ? offsetColor : normalColor);
+                instance.name = $"Tile {(c-1) * tileCount.y + r-1}";
+                instance.transform.parent = transform;
             }
         }
     }
