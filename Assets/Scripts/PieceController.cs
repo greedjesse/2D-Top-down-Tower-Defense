@@ -28,6 +28,7 @@ public class PieceController : MonoBehaviour
         _destination = startPos;
         shadowPos = startPos;
         _currentPos = startPos;
+        _pieceStatsHolder.destination = _destination;
         
         statsHolder.existingPieces.Add(_pieceStatsHolder);
     }
@@ -141,8 +142,6 @@ public class PieceController : MonoBehaviour
         _destination = _possibleDestination;
         _pieceStatsHolder.destination = _destination;
         _distanceSD = Vector2.Distance(_source, _destination);
-        
-        
     }
     
     // Used for the y offset.
