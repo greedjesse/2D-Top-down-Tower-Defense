@@ -43,11 +43,13 @@ public class PieceController : MonoBehaviour
         };
 
         // Fed the received inputs back to the game.
-        if (_inputs.LeftMouseDown)
+        if (_selected && _inputs.LeftMouseDown)
         {
             _timeLeftMouseWasPressed = _time;
             _possibleDestination = stateHolder.GetTilePos(_camera.ScreenToWorldPoint(Input.mousePosition));
-            _moveToConsume = true;
+
+            if (CheckMovementValidation(_possibleDestination)) _moveToConsume = true;
+            else _moveBufferUsable = false;
         }
     }
 
@@ -88,11 +90,10 @@ public class PieceController : MonoBehaviour
     
     private void HandleMovement()
     {
-        _moveBufferUsable = Moving;
-        
         // Check grounded.
         if (!Moving)
         {
+            _moveBufferUsable = false;
             _source = _destination;
             shadowPos = _destination;
             _currentPos = _destination;
@@ -122,6 +123,7 @@ public class PieceController : MonoBehaviour
     private void ExecuteMove()
     {
         _timeLastMoveExecuted = _time;
+        _moveBufferUsable = true;
         _source = shadowPos;
         _destination = _possibleDestination;
         _distanceSD = Vector2.Distance(_source, _destination);
@@ -153,7 +155,6 @@ public class PieceController : MonoBehaviour
         {
             _selected = true;
         }
-
         
         Vector2 mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
         if (_col.OverlapPoint(mousePos))
@@ -168,7 +169,7 @@ public class PieceController : MonoBehaviour
         }
         else
         {
-            if (_inputs.LeftMouseDown)
+            if (!_moveToConsume && !HaveBufferedMove && _inputs.LeftMouseDown)
             {
                 if (stateHolder.selectedPiece == gameObject)
                 {
@@ -192,6 +193,19 @@ public class PieceController : MonoBehaviour
         float xDist = xRange.y - xRange.x;
         float yDist = yRange.y - yRange.x;
         return yRange.x + (yDist / (1 + Mathf.Exp(-5f / xDist * (x - xDist / 2))));
+    }
+
+    private bool CheckMovementValidation(Vector2 destination)
+    {
+        foreach (var pattern in stats.patterns)
+        {
+            if (_destination + pattern == destination)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     #endregion

@@ -13,8 +13,11 @@ MonoBehaviour:
   m_Name: King
   m_EditorClassIdentifier: 
   speedFactor: 6
-  moveTime: 0.6
   moveBuffer: 0.2
+  maxMoveTime: 0.8
+  minMoveTime: 0.6
+  dMaxMoveTime: 16
+  dMinMoveTime: 12
   maxYOffset: 0.7
   minYOffset: 0.3
   dMaxYOffset: 10

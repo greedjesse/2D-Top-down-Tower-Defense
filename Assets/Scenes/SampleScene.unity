@@ -817,6 +817,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab35ceb6248f0dc4dadaed65d83db2a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tileController: {fileID: 1715035386}
   selectedPiece: {fileID: 1359302240}
   selectedPieceQueue: []
   lastClickedTileCoord: {x: 0, y: 0}
