@@ -6,6 +6,9 @@ using UnityEngine.Tilemaps;
 public class StatsHolder : MonoBehaviour
 {
     [SerializeField] private TileController tileController;
+
+    [Header("Pieces")] 
+    public List<PieceStatsHolder> existingPieces = new List<PieceStatsHolder>();
     
     [Header("Piece Selection")]
     public GameObject selectedPiece;

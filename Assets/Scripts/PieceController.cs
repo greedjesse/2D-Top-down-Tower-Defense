@@ -1,11 +1,15 @@
+using System.Security.Cryptography;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PieceController : MonoBehaviour
 {
     #region Components
 
     [SerializeField] private PieceStats stats;
-    [SerializeField] private StatsHolder stateHolder;
+    [SerializeField] private StatsHolder statsHolder;
+    private PieceStatsHolder _pieceStatsHolder;
     private Collider2D _col;
     private Camera _camera;
 
@@ -17,7 +21,15 @@ public class PieceController : MonoBehaviour
     {
         _time = 0;
         _col = GetComponent<Collider2D>();
+        _pieceStatsHolder = GetComponent<PieceStatsHolder>();
         _camera = Camera.main;
+
+        _source = startPos;
+        _destination = startPos;
+        shadowPos = startPos;
+        _currentPos = startPos;
+        
+        statsHolder.existingPieces.Add(_pieceStatsHolder);
     }
     
     void Update()
@@ -46,7 +58,7 @@ public class PieceController : MonoBehaviour
         if (_selected && _inputs.LeftMouseDown)
         {
             _timeLeftMouseWasPressed = _time;
-            _possibleDestination = stateHolder.GetTilePos(_camera.ScreenToWorldPoint(Input.mousePosition));
+            _possibleDestination = statsHolder.GetTilePos(_camera.ScreenToWorldPoint(Input.mousePosition));
 
             if (CheckMovementValidation(_possibleDestination)) _moveToConsume = true;
             else _moveBufferUsable = false;
@@ -70,7 +82,8 @@ public class PieceController : MonoBehaviour
     #region Movement
     private float _speed;
     private Vector2 _velocity;
-    
+
+    [SerializeField] private Vector2 startPos;
     private Vector2 _source;
     private Vector2 _destination;
     private Vector2 _currentPos;
@@ -126,7 +139,10 @@ public class PieceController : MonoBehaviour
         _moveBufferUsable = true;
         _source = shadowPos;
         _destination = _possibleDestination;
+        _pieceStatsHolder.destination = _destination;
         _distanceSD = Vector2.Distance(_source, _destination);
+        
+        
     }
     
     // Used for the y offset.
@@ -151,7 +167,7 @@ public class PieceController : MonoBehaviour
     private void HandleSelection()
     {
         _selected = false;
-        if (stateHolder.selectedPiece == gameObject)
+        if (statsHolder.selectedPiece == gameObject)
         {
             _selected = true;
         }
@@ -161,9 +177,9 @@ public class PieceController : MonoBehaviour
         {
             if (_inputs.LeftMouseDown)
             {
-                if (!stateHolder.selectedPieceQueue.Contains(gameObject))
+                if (!statsHolder.selectedPieceQueue.Contains(gameObject))
                 {
-                    stateHolder.selectedPieceQueue.Add(gameObject);
+                    statsHolder.selectedPieceQueue.Add(gameObject);
                 }
             }
         }
@@ -171,9 +187,9 @@ public class PieceController : MonoBehaviour
         {
             if (!_moveToConsume && !HaveBufferedMove && _inputs.LeftMouseDown)
             {
-                if (stateHolder.selectedPiece == gameObject)
+                if (statsHolder.selectedPiece == gameObject)
                 {
-                    stateHolder.selectedPieceQueue.Remove(gameObject);
+                    statsHolder.selectedPieceQueue.Remove(gameObject);
                 }
             }                
         }
@@ -197,15 +213,26 @@ public class PieceController : MonoBehaviour
 
     private bool CheckMovementValidation(Vector2 destination)
     {
-        foreach (var pattern in stats.patterns)
+        bool valid = false;
+        foreach (Vector2 pattern in stats.patterns)
         {
             if (_destination + pattern == destination)
             {
-                return true;
+                valid = true;
             }
         }
 
-        return false;
+        if (!valid) return false;
+
+        foreach (PieceStatsHolder piece in statsHolder.existingPieces)
+        {
+            if (destination == piece.destination)
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     #endregion
