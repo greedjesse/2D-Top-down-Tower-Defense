@@ -1,7 +1,4 @@
-using System.Security.Cryptography;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class PieceController : MonoBehaviour
 {
